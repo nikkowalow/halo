@@ -2,9 +2,9 @@
 -- +goose StatementBegin
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    created_at DATE,
-    name VARCHAR(255),
-    email VARCHAR(255)
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 -- +goose StatementEnd
 
