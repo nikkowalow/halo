@@ -1,6 +1,16 @@
 [package]
+edition = "2021"
 name = "core"
 version = "0.1.0"
-edition = "2021"
 
 [dependencies]
+colored = "2.0"
+dotenv = "0.15"
+omicron = {path = "./omicron"}
+
+[workspace]
+members = [
+  "alpha",
+  "iota",
+  "omicron",
+]
