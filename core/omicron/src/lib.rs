@@ -1,4 +1,5 @@
 pub mod internal;
+pub mod public;
 pub mod types;
 pub mod users;
 
@@ -33,6 +34,7 @@ pub async fn run() -> Result<(), Error> {
 
     let app = Router::new()
         .route("/users", get(internal::users))
+        .route("/events", get(public::events))
         .with_state(db_pool)
         .layer(cors);
 
