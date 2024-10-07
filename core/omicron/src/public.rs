@@ -31,22 +31,17 @@ pub struct Event {
 pub struct Ticket {
     id: i32,
     event_id: i32,
-    user_id: i32,
     price: f64,
-    ticket_type: TicketType,
+    ticket_type: Option<TicketType>,
     seat: Option<String>,
-    purchased_at: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, sqlx::Type)]
 #[sqlx(type_name = "ticket_type")]
 #[derive(Serialize, Deserialize)]
 pub enum TicketType {
-    General,
+    GA,
     VIP,
-    EarlyBird,
-    Student,
-    Senior,
 }
 
 pub async fn events(
@@ -89,10 +84,9 @@ pub async fn tickets(
         SELECT 
             id,
             event_id,
-            user_id,
             price,
-            status as "status: TicketStatus",
-            purchased_at
+            ticket_type as "ticket_type: TicketType",
+            seat
         FROM tickets
         "#
     )
