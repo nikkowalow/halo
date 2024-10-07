@@ -35,7 +35,7 @@ pub async fn run() -> Result<(), Error> {
     let app = Router::new()
         .route("/users", get(internal::users))
         .route("/events", get(public::events))
-        .route("/tickets", get(public::tickets))
+        .route("/tickets/:event_id", get(public::tickets))
         .with_state(db_pool)
         .layer(cors);
 

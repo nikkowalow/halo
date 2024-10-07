@@ -1,4 +1,9 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
+};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
@@ -75,7 +80,9 @@ pub async fn events(
     Ok(Json(rows))
 }
 
+// #[debug_handler]
 pub async fn tickets(
+    Path(event_id): Path<i32>, // Accept event_id as a path parameter
     State(pg_pool): State<PgPool>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let rows = sqlx::query_as!(
@@ -88,7 +95,9 @@ pub async fn tickets(
             ticket_type as "ticket_type: TicketType",
             seat
         FROM tickets
-        "#
+        WHERE event_id = $1
+        "#,
+        event_id // Pass event_id as a parameter
     )
     .fetch_all(&pg_pool)
     .await
