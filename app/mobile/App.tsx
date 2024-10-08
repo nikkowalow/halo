@@ -1,18 +1,17 @@
 import React from 'react';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Events from './src/events';
+import Events from './src/screens/events';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
 const Stack = createStackNavigator();
 
-// Custom dark theme
 const CustomDarkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: '#121212', // Dark background color
+    background: '#121212', 
   },
 };
 

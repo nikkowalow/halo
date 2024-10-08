@@ -1,11 +1,4 @@
-export interface Event {
-    id: number;
-    name: string;
-    location: String;
-    capacity: number;
-    available: number;
-    price: number;
-}
+import { Event, Ticket } from "../types/types";
 
 export async function fetchEvents(): Promise<Event[]> {
     try {
@@ -37,12 +30,6 @@ export async function fetchEvents(): Promise<Event[]> {
         console.error("Error:", error);
         throw error; 
     }
-}
-export interface Ticket {
-    id: number;
-    eventId: number;
-    holderName: string;
-    price: number;
 }
 
 export async function fetchTickets(eventId: number): Promise<Ticket[]> {

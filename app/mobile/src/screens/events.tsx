@@ -1,16 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
-import { fetchEvents, Event } from '../core/utils/api'; 
-
-
+import { fetchEvents } from '../services/api'; 
+import { Event } from '../types/types'; 
+import EventComponent from '../components/event-card';
 
 export default function Events() {
   const [events, setEvents] = useState<Event[]>([]); 
   const [loading, setLoading] = useState(true);
-    // await Font.loadAsync({
-    //     'CustomFont': require('../assets/fonts/Blur Medium.otf'), // Your custom font
-    // });
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -45,14 +42,7 @@ export default function Events() {
     <Text style={styles.header}>Browse Events</Text>
     <StatusBar style="auto" />
     {events.map((event, index) => (
-        <View key={index} style={styles.eventCard}>
-            <View style={styles.eventDetails}>
-                <Text style={styles.eventName}>{event.name}</Text>
-                <Text style={styles.eventInfo}>{event.location}</Text>
-                <Text style={styles.eventInfo}>Tickets: {event.available} / {event.capacity}</Text>
-            </View>
-            <Text style={styles.eventPrice}>${event.price}</Text>
-        </View>
+        <EventComponent key={index} event={event} />
     ))}
     </ScrollView>
   );
@@ -61,20 +51,21 @@ export default function Events() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Changed background color to dark
+    backgroundColor: '#000', 
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
-    color: '#fff', // Changed text color to white
+    color: '#fff', 
+    fontFamily: 'CustomFont'
   },
   loadingText: {
-    color: '#fff', // Changed text color to white
+    color: '#fff',
   },
   eventCard: {
-    backgroundColor: '#111', // Changed card background color to dark
+    backgroundColor: '#111', 
     padding: 20,
     marginVertical: 10,
     marginHorizontal: 20,
@@ -95,17 +86,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
     marginVertical: 8,
-    color: '#fff', // Changed text color to white
+    color: '#fff', 
   },
   eventInfo: {
     fontSize: 14,
     marginVertical: 2,
     fontWeight: '400',
-    color: '#fff', // Changed text color to white
+    color: '#fff', 
   },
   eventPrice: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0a0', // Changed text color to white
+    color: '#0a0', 
   },
 });
