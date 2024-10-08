@@ -80,9 +80,8 @@ pub async fn events(
     Ok(Json(rows))
 }
 
-// #[debug_handler]
 pub async fn tickets(
-    Path(event_id): Path<i32>, // Accept event_id as a path parameter
+    Path(event_id): Path<i32>,
     State(pg_pool): State<PgPool>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let rows = sqlx::query_as!(

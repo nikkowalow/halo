@@ -1,0 +1,28 @@
+[package]
+edition = "2021"
+name = "mu"
+version = "0.1.0"
+
+[dependencies]
+axum = "0.7.5"
+chrono = {version = "0.4.38", features = ["serde"]}
+colored = "2.0"
+dotenv = "0.15.0"
+log = "0.4"
+serde = {version = "1.0", features = ["derive"]}
+serde_json = "1.0"
+simplelog = "0.11"
+sqlx = {version = "0.6", features = ["chrono", "mysql", "postgres", "runtime-async-std-native-tls", "uuid"]}
+tokio = {version = "1", features = ["full"]}
+tokio-postgres = "0.7"
+tower-http = {version = "0.5.2", features = ["cors"]}
+uuid = {version = "1.10.0", features = ["serde", "v4"]}
+futures-util = "0.3"
+tokio-tungstenite = { version = "0.17.2", features = ["native-tls"] }
+tokio-native-tls = "0.3"
+url = "2.3"
+
+
+
+[lib]
+path = "src/lib.rs"

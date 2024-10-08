@@ -15,7 +15,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 #[tokio::main]
 pub async fn run() -> Result<(), Error> {
-    println!("{} {} {}", "starting", "omicron".green().bold(), "...");
+    println!("{} {} {}", "starting", "omicron".purple().bold(), "...");
     dotenv().ok();
 
     let server_address = env::var("SERVER_ADDRESS").expect("SERVER_ADDRESS not set");

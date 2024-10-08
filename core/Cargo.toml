@@ -6,11 +6,14 @@ version = "0.1.0"
 [dependencies]
 colored = "2.0"
 dotenv = "0.15"
+tokio-tungstenite = { version = "0.17.2", features = ["tokio-native-tls"] }
+tokio-native-tls = "0.3"
 omicron = {path = "./omicron"}
+mu = {path = "./mu"}
 
 [workspace]
 members = [
   "alpha",
-  "iota",
+  "iota", "mu",
   "omicron",
 ]
