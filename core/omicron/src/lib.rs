@@ -15,8 +15,7 @@ use tokio::sync::OnceCell;
 use tokio_postgres::Error;
 use tower_http::cors::{Any, CorsLayer};
 
-// Define the global PgPool wrapped in OnceCell for shared access
-static DB_POOL: OnceCell<PgPool> = OnceCell::const_new();
+pub static DB_POOL: OnceCell<PgPool> = OnceCell::const_new();
 
 pub async fn initialize_db_pool() {
     dotenv().ok();
