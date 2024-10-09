@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
-import { fetchEvents } from '../services/api'; 
+import { buyTicket, fetchEvents } from '../services/api'; 
 import { Event } from '../types/types'; 
 import EventComponent from '../components/event-card';
 
@@ -42,7 +42,11 @@ export default function Events() {
     <Text style={styles.header}>Browse Events</Text>
     <StatusBar style="auto" />
     {events.map((event, index) => (
-        <EventComponent key={index} event={event} />
+        <EventComponent 
+            key={index} 
+            event={event} 
+            fx={buyTicket}
+        />
     ))}
     </ScrollView>
   );

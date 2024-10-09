@@ -3,6 +3,7 @@ pub mod public;
 pub mod types;
 pub mod users;
 
+use anyhow::{Context, Result};
 use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use colored::*;
 use dotenv::dotenv;
@@ -57,4 +58,41 @@ pub async fn run() -> Result<(), Error> {
         .await
         .expect("error serving app...");
     Ok(())
+}
+
+#[derive(Serialize, Debug)]
+pub struct EventPartial {
+    pub id: i32,
+    pub name: String,
+    pub capacity: i64,
+    pub available: Option<i64>,
+}
+
+pub async fn event(event_id: i32) -> Result<EventPartial> {
+    let pool = DB_POOL.get().expect("DB_POOL must be initialized");
+
+    let row = sqlx::query!(
+        r#"
+        SELECT 
+            id,
+            name,
+            capacity,
+            available
+        FROM events
+        WHERE id = $1
+        "#,
+        event_id
+    )
+    .fetch_one(pool)
+    .await
+    .context("Failed to fetch event from database")?;
+
+    let event_partial = EventPartial {
+        id: row.id,
+        name: row.name,
+        capacity: row.capacity,
+        available: row.available,
+    };
+
+    Ok(event_partial)
 }

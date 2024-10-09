@@ -16,7 +16,6 @@ pub enum EventCategory {
     Club,
     Birthday,
     Dinner,
-    // WorkEvent,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -96,7 +95,7 @@ pub async fn tickets(
         FROM tickets
         WHERE event_id = $1
         "#,
-        event_id // Pass event_id as a parameter
+        event_id
     )
     .fetch_all(&pg_pool)
     .await

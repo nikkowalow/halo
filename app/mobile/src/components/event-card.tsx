@@ -1,22 +1,28 @@
 import React from 'react';
 import { Event } from '../types/types';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import Button from './buttons/button';
+import { buyTicket } from '../services/api';
 
 interface EventComponentProps {
-event: Event;
+    event: Event;
 }
 
-const EventComponent: React.FC<EventComponentProps> = ({ event }) => {
-return (
-    <View style={styles.eventCard}>
-        <View style={styles.eventDetails}>
-            <Text style={styles.eventName}>{event.name}</Text>
-            <Text style={styles.eventInfo}>{event.location}</Text>
-            <Text style={styles.eventInfo}>Tickets: {event.available} / {event.capacity}</Text>
+const EventComponent: React.FC<EventComponentProps & { fx: (eventId: number) => void }> = ({ event, fx }) => {
+
+    return (
+        <View style={styles.eventCard}>
+            <View style={styles.eventDetails}>
+                <Text style={styles.eventName}>{event.name}</Text>
+                <Text style={styles.eventInfo}>{event.location}</Text>
+                <Text style={styles.eventInfo}>Tickets: {event.available} / {event.capacity}</Text>
+            </View>
+            <View>
+                <Text style={styles.eventPrice}>${event.price}</Text>
+                <Button title="Buy Tickets" onPress={() => fx(event.id)} />
+            </View>
         </View>
-        <Text style={styles.eventPrice}>${event.price}</Text>
-    </View>
-);
+    );
 };
 
 export default EventComponent;

@@ -1,8 +1,13 @@
 import { Event, Ticket } from "../types/types";
+import Config from "react-native-config";
+
+// const API = Config.LOCAL_API_URL;
+const API = "http://127.0.0.1:8081";
+console.log("API:", API);
 
 export async function fetchEvents(): Promise<Event[]> {
     try {
-        const response = await fetch("http://127.0.0.1:8080/events", {
+        const response = await fetch(`${API}/events`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -34,7 +39,7 @@ export async function fetchEvents(): Promise<Event[]> {
 
 export async function fetchTickets(eventId: number): Promise<Ticket[]> {
     try {
-        const response = await fetch(`http://127.0.0.1:8080/tickets/${eventId}`, {
+        const response = await fetch(`${API}/tickets/${eventId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -54,3 +59,28 @@ export async function fetchTickets(eventId: number): Promise<Ticket[]> {
         throw error; 
     }
 }
+
+export const buyTicket = async (eventId: number) => {
+    try {
+        const socket = new WebSocket('ws://127.0.0.1:8080');
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+            socket.send(JSON.stringify({ action: 'buyTicket', eventId }));
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            alert("Error buying event. Please try again.");
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+    } catch (error) {
+        console.error("Error buying ticket:", error);
+        alert("Error buying event. Please try again.");
+    }
+};
+
+
