@@ -12,7 +12,7 @@ const EventComponent: React.FC<EventComponentProps> = ({ event, fx }) => {
     return (
         <View style={styles.eventCard}>
             <Image 
-                source={{ uri: event.cardImage || 'https://via.placeholder.com/300x200.png?text=Event' }}
+                source={{ uri: event.cardImageUrl || 'https://via.placeholder.com/300x200.png?text=Event' }}
                 style={styles.eventImage}
                 resizeMode="cover"
             />

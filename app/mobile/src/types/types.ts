@@ -12,6 +12,6 @@ export interface Event {
     capacity: number;
     available: number;
     price: number;
-    cardImage: string; 
+    cardImageUrl: string; 
 }
 

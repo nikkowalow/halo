@@ -24,9 +24,9 @@ export async function fetchEvents(): Promise<Event[]> {
             price: 0,
             cardImageUrl: e.card_image_url || 'https://via.placeholder.com/300x200.png?text=Event'
         }));
-
         for (const event of events) {
             const tickets = await fetchTickets(event.id);
+            console.log(event.cardImageUrl)
             event.available = tickets.length;
             if (tickets.length > 0) {
                 event.price = tickets[0].price;
