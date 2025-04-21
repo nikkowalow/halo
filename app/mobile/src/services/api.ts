@@ -7,35 +7,39 @@ console.log("API:", API);
 
 export async function fetchEvents(): Promise<Event[]> {
     try {
-        const response = await fetch(`${API}/events`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
+        const response = await fetch(`${API}/events`);
         if (!response.ok) {
             throw new Error(`Failed to fetch events: ${response.status} ${response.statusText}`);
         }
 
-        const events: Event[] = await response.json();
-        console.log("API response:", events);
+        const rawEvents = await response.json();
+        console.log("Raw API response:", rawEvents);
+
+        const events: Event[] = rawEvents.map((e: any) => ({
+            id: e.id,
+            name: e.name,
+            location: e.location,
+            capacity: e.capacity,
+            available: 0,
+            price: 0,
+            cardImageUrl: e.card_image_url || 'https://via.placeholder.com/300x200.png?text=Event'
+        }));
 
         for (const event of events) {
             const tickets = await fetchTickets(event.id);
             event.available = tickets.length;
-            if(tickets.length > 0) {
+            if (tickets.length > 0) {
                 event.price = tickets[0].price;
             }
         }
 
-
         return events;
     } catch (error) {
         console.error("Error:", error);
-        throw error; 
+        throw error;
     }
 }
+
 
 export async function fetchTickets(eventId: number): Promise<Ticket[]> {
     try {

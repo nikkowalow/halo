@@ -29,6 +29,7 @@ pub struct Event {
     available: Option<i64>,
     created_at: chrono::NaiveDate,
     updated_at: Option<chrono::NaiveDate>,
+    card_image_url: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -63,7 +64,8 @@ pub async fn events(
             capacity,
             available,
             created_at,
-            updated_at
+            updated_at,
+            card_image_url
         FROM events
         "#
     )
