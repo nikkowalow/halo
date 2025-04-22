@@ -50,6 +50,53 @@ fn hash_password(password: &str) -> Result<String, (StatusCode, Json<serde_json:
         .map_err(|_| internal_error("Failed to hash password".into()))
 }
 
+#[derive(Deserialize)]
+pub struct LoginRequest {
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Serialize)]
+pub struct LoginResponse {
+    pub message: String,
+}
+
+pub async fn login(
+    State(pg_pool): State<PgPool>,
+    Json(req): Json<LoginRequest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let row = sqlx::query!("SELECT password FROM users WHERE email = $1", req.email)
+        .fetch_optional(&pg_pool)
+        .await
+        .map_err(|e| internal_error(format!("Database error: {}", e)))?;
+
+    let Some(user) = row else {
+        return Err(unauthorized("Invalid email or password"));
+    };
+
+    let parsed_hash = PasswordHash::new(user.password.as_deref().unwrap_or(""))
+        .map_err(|_| internal_error("Stored password hash is invalid".to_string()))?;
+
+    let is_valid = Argon2::default()
+        .verify_password(req.password.as_bytes(), &parsed_hash)
+        .is_ok();
+
+    if !is_valid {
+        return Err(unauthorized("Invalid email or password"));
+    }
+
+    Ok(Json(LoginResponse {
+        message: "Login successful".to_string(),
+    }))
+}
+
+fn unauthorized(msg: &str) -> (StatusCode, Json<serde_json::Value>) {
+    (
+        StatusCode::UNAUTHORIZED,
+        Json(serde_json::json!({ "error": msg })),
+    )
+}
+
 fn internal_error(msg: String) -> (StatusCode, Json<serde_json::Value>) {
     (
         StatusCode::INTERNAL_SERVER_ERROR,

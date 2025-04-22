@@ -4,7 +4,7 @@ pub mod public;
 pub mod types;
 pub mod users;
 
-use crate::auth::handlers::signup;
+use crate::auth::handlers::{login, signup};
 use anyhow::{Context, Result};
 use axum::{
     extract::State,
@@ -55,6 +55,7 @@ pub async fn run() -> Result<(), Error> {
         .route("/events", get(public::events))
         .route("/tickets/:event_id", get(public::tickets))
         .route("/signup", post(signup))
+        .route("/login", post(login))
         .with_state(DB_POOL.get().expect("DB_POOL must be initialized").clone())
         .layer(cors);
 
