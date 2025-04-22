@@ -22,7 +22,7 @@ export async function fetchEvents(): Promise<Event[]> {
             capacity: e.capacity,
             available: 0,
             price: 0,
-            cardImageUrl: e.card_image_url || 'https://via.placeholder.com/300x200.png?text=Event'
+            cardImageUrl: e.card_image_url || null
         }));
         for (const event of events) {
             const tickets = await fetchTickets(event.id);
