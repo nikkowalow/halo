@@ -1,10 +1,18 @@
+pub mod auth;
 pub mod internal;
 pub mod public;
 pub mod types;
 pub mod users;
 
+use crate::auth::handlers::signup;
 use anyhow::{Context, Result};
-use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Json, Router,
+};
 use colored::*;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
@@ -46,6 +54,7 @@ pub async fn run() -> Result<(), Error> {
         .route("/users", get(internal::users))
         .route("/events", get(public::events))
         .route("/tickets/:event_id", get(public::tickets))
+        .route("/signup", post(signup))
         .with_state(DB_POOL.get().expect("DB_POOL must be initialized").clone())
         .layer(cors);
 
