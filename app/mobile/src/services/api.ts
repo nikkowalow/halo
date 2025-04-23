@@ -20,18 +20,10 @@ export async function fetchEvents(): Promise<Event[]> {
             name: e.name,
             location: e.location,
             capacity: e.capacity,
-            available: 0,
+            available: e.available,
             price: 0,
             cardImageUrl: e.card_image_url || null
         }));
-        for (const event of events) {
-            const tickets = await fetchTickets(event.id);
-            console.log(event.cardImageUrl)
-            event.available = tickets.length;
-            if (tickets.length > 0) {
-                event.price = tickets[0].price;
-            }
-        }
 
         return events;
     } catch (error) {
@@ -55,7 +47,6 @@ export async function fetchTickets(eventId: number): Promise<Ticket[]> {
         }
 
         const result: Ticket[] = await response.json();
-        console.log("API response:", result);
 
         return result;
     } catch (error) {
@@ -65,12 +56,13 @@ export async function fetchTickets(eventId: number): Promise<Ticket[]> {
 }
 
 export const buyTicket = async (eventId: number) => {
+    console.log('eventId => ', eventId)
     try {
         const socket = new WebSocket('ws://127.0.0.1:8080');
 
         socket.onopen = () => {
-            console.log('WebSocket connection established');
-            socket.send(JSON.stringify({ action: 'buyTicket', eventId }));
+            console.log('WS opened... sending request to matching engine...');
+            socket.send(JSON.stringify({ action: 'buyTicket', eventId, qty: 1}));
         };
 
         socket.onerror = (error) => {

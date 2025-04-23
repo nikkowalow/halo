@@ -2,11 +2,21 @@ pub mod matching;
 
 use colored::*;
 use futures_util::{SinkExt, StreamExt};
+use serde::Deserialize;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tokio_postgres::Error;
 use tokio_tungstenite::{accept_async, tungstenite::protocol::Message};
 
+#[derive(Debug, Deserialize)]
+#[serde(tag = "action", rename_all = "camelCase")]
+pub enum ClientMessage {
+    BuyTicket {
+        #[serde(rename = "eventId")]
+        event_id: i32,
+        qty: i64,
+    },
+}
 #[tokio::main]
 pub async fn run() -> Result<(), Error> {
     println!("{} {} {}", "starting", "MU".red().bold(), "...");
@@ -32,20 +42,46 @@ pub async fn run() -> Result<(), Error> {
                     Ok(msg) => match msg {
                         Message::Text(text) => {
                             println!("Received text message: {}", text);
-                            let ticket = matching::BuyTicket {
-                                event_id: 1,
-                                amount: 1,
-                            };
-                            let result = matching::buy_ticket(ticket).await;
-                            write
-                                .send(Message::Text(
-                                    result.unwrap_or("error buying ticket".to_string()),
-                                ))
-                                .await
-                                .expect("Failed to send message");
+
+                            match serde_json::from_str::<ClientMessage>(&text) {
+                                Ok(ClientMessage::BuyTicket { event_id, qty }) => {
+                                    let ticket = matching::BuyTicket {
+                                        event_id,
+                                        amount: qty,
+                                    };
+                                    let result = matching::buy_ticket(ticket).await;
+                                    write
+                                        .send(Message::Text(
+                                            result.unwrap_or("error buying ticket".to_string()),
+                                        ))
+                                        .await
+                                        .expect("Failed to send message");
+                                }
+                                Err(e) => {
+                                    println!("Failed to parse JSON: {}", e);
+                                    write
+                                        .send(Message::Text("invalid message format".to_string()))
+                                        .await
+                                        .expect("Failed to send message");
+                                }
+                            }
                         }
-                        // BuyTicket => {}
-                        _ => println!("Received non-text message"),
+                        Message::Binary(_) => {
+                            println!("Binary message received – ignoring.");
+                        }
+                        Message::Ping(ping) => {
+                            println!("Ping received – responding with Pong.");
+                            write.send(Message::Pong(ping)).await.ok();
+                        }
+                        Message::Pong(_) => {
+                            println!("Pong received.");
+                        }
+                        Message::Close(frame) => {
+                            println!("Connection closed: {:?}", frame);
+                        }
+                        _ => {
+                            println!("Unhandled message type");
+                        }
                     },
                     Err(e) => {
                         println!("Error: {}", e);
